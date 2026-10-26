@@ -1,7 +1,8 @@
 node_modules/
-dist/
+target/
 release/
-bin/*.exe
-bin/*.dll
-bin/*.dat
+dist/
+src-tauri/gen/
+bin/*
+!bin/.gitkeep
 *.log

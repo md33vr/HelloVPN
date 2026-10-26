@@ -1,7 +1,8 @@
 'use strict';
 /**
- * Скачивает последние релизы sing-box и Xray-core для Windows в папку bin/.
- * Запуск: npm run fetch-cores   (только sing-box: npm run fetch-cores -- singbox)
+ * Скачивает последний релиз sing-box для Windows в папку bin/ (он входит в установщик).
+ * Xray в установщик не входит — Hello! скачивает его сам при первом выборе этого ядра.
+ * Запуск: npm run fetch-cores   (Xray для разработки: npm run fetch-cores -- xray)
  */
 const fs = require('fs');
 const os = require('os');
@@ -26,7 +27,7 @@ const CORES = {
 
 async function latestAsset(repo, re) {
   const res = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, {
-    headers: { 'User-Agent': 'vpn-launcher', Accept: 'application/vnd.github+json' },
+    headers: { 'User-Agent': 'hello-vpn', Accept: 'application/vnd.github+json' },
   });
   if (!res.ok) throw new Error(`${repo}: GitHub API ответил ${res.status}`);
   const rel = await res.json();
@@ -77,7 +78,7 @@ async function install(key) {
     process.exit(1);
   }
   const which = process.argv.slice(2);
-  const keys = which.length ? which : Object.keys(CORES);
+  const keys = which.length ? which : ['singbox'];
   for (const k of keys) {
     if (!CORES[k]) { console.error(`Неизвестное ядро: ${k}`); continue; }
     await install(k);

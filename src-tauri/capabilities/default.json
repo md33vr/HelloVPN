@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Окно Hello! вызывает только свои команды и события",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

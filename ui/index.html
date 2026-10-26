@@ -2,8 +2,6 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
   <title>Hello!</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -32,11 +30,17 @@
     <section class="tab active" id="tab-home">
       <div class="home">
         <div class="home-top">
-          <button class="power" id="powerBtn" aria-label="Подключить">
-            <svg viewBox="0 0 24 24" width="50" height="50"><path d="M12 3v9" /><path d="M6.4 6.6a8 8 0 1 0 11.2 0" /></svg>
-          </button>
+          <div class="power-row">
+            <button class="power" id="powerBtn" aria-label="Подключить">
+              <svg viewBox="0 0 24 24" width="50" height="50"><path d="M12 3v9" /><path d="M6.4 6.6a8 8 0 1 0 11.2 0" /></svg>
+            </button>
+            <button class="round-btn" id="homeRefresh" title="Обновить подписки" aria-label="Обновить подписки">
+              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8" /><path d="M4 4v4h4" /><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16" /><path d="M20 20v-4h-4" /></svg>
+            </button>
+          </div>
           <div class="home-status" id="homeStatus">Отключено</div>
           <div class="home-timer" id="homeTimer"></div>
+          <div class="home-announce" id="homeAnnounce" hidden></div>
         </div>
 
         <div class="home-cards">
@@ -91,7 +95,6 @@
         <h1>Серверы</h1>
         <div class="actions">
           <button class="btn" id="pingAll">Пинг всех</button>
-          <button class="btn" id="refreshSubs">Обновить подписки</button>
         </div>
       </header>
       <div class="import">
@@ -221,6 +224,7 @@
   </div>
 
   <div id="toasts"></div>
+  <script src="api.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

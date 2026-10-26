@@ -138,6 +138,12 @@ function renderHome() {
   }
   $('#homeHealth').textContent = hl;
   $('#sideVersion').textContent = `${S.app.name} ${S.app.version}`;
+
+  // Объявление провайдера подписки активного сервера (заголовок announce)
+  const sub = p && p.subId ? S.subscriptions.find(x => x.id === p.subId) : null;
+  const ann = $('#homeAnnounce');
+  ann.hidden = !(sub && sub.announce);
+  ann.textContent = sub && sub.announce ? sub.announce : '';
 }
 
 $('#autoSwitchToggle').addEventListener('change', e => guard(async () => {
@@ -230,10 +236,18 @@ function renderServers() {
       else if (used) meta += ` · использовано ${fmtBytes(used)}`;
       if (sub.userInfo.expire) meta += ` · до ${new Date(sub.userInfo.expire * 1000).toLocaleDateString('ru-RU')}`;
     }
-    head.innerHTML = `<div><div class="group-title">${esc(sub ? sub.name : 'Добавленные вручную')}</div><div class="group-meta">${esc(meta)}</div></div>`;
+    head.innerHTML = `<div><div class="group-title">${esc(sub ? sub.name : 'Добавленные вручную')}</div><div class="group-meta">${esc(meta)}</div>`
+      + (sub && sub.announce ? `<div class="group-announce">${esc(sub.announce)}</div>` : '') + `</div>`;
     if (sub) {
       const acts = document.createElement('div');
       acts.className = 'actions';
+      for (const [kind, label, url] of [['support', 'Поддержка', sub.supportUrl], ['web', 'Кабинет', sub.webPageUrl]]) {
+        if (!url) continue;
+        const b = document.createElement('button');
+        b.className = 'btn small'; b.textContent = label; b.title = url;
+        b.onclick = () => guard(() => api.openSubLink(sub.id, kind));
+        acts.appendChild(b);
+      }
       const r = document.createElement('button');
       r.className = 'btn small'; r.textContent = 'Обновить';
       r.onclick = () => guard(async () => {
@@ -277,12 +291,19 @@ $('#pingAll').addEventListener('click', () => guard(async () => {
   } finally { $('#pingAll').disabled = false; }
 }));
 
-$('#refreshSubs').addEventListener('click', () => guard(async () => {
-  const res = await api.refreshSubs();
-  S = { ...S, ...res.state };
-  res.errors.forEach(e => toast(e, 'err'));
-  if (!res.errors.length) toast('Подписки обновлены', 'ok');
-  renderAll();
+// Обновление всех подписок — круглая кнопка рядом с кнопкой подключения
+$('#homeRefresh').addEventListener('click', () => guard(async () => {
+  const btn = $('#homeRefresh');
+  if (btn.classList.contains('spin')) return;
+  if (!S.subscriptions.length) { showTab('servers'); throw new Error('Подписок пока нет — добавьте ссылку во вкладке «Серверы»'); }
+  btn.classList.add('spin');
+  try {
+    const res = await api.refreshSubs();
+    S = { ...S, ...res.state };
+    res.errors.forEach(e => toast(e, 'err'));
+    if (!res.errors.length) toast('Подписки обновлены', 'ok');
+    renderAll();
+  } finally { btn.classList.remove('spin'); }
 }));
 
 /* ---------------------------- приложения ---------------------------- */
@@ -414,7 +435,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#procModa
 function renderSettings() {
   $$('#coreSeg button').forEach(b => b.classList.toggle('on', b.dataset.core === S.settings.core));
   $('#coreHint').textContent = S.settings.core === 'xray'
-    ? 'Xray обрабатывает протокол (поддерживает XHTTP), sing-box — TUN и выбор процессов.'
+    ? 'Xray обрабатывает протокол (нужен для XHTTP; скачается при первом подключении), sing-box — TUN и выбор процессов.'
     : 'sing-box делает всё сам: TUN, выбор процессов и протокол (Hysteria2 поддерживается).';
   $$('[data-setting]').forEach(el => {
     const v = S.settings[el.dataset.setting];
