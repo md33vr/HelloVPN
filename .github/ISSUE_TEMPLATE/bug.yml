@@ -1,0 +1,37 @@
+name: Что-то не работает
+description: Ошибка подключения, вылет, странное поведение
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо, что пишете! Самое полезное — архив логов: на главной в панели журнала нажмите **«Собрать логи»** (или в трее → «Собрать логи»). Архив появится на рабочем столе. UUID, пароли, ключи, адреса серверов и ссылки подписок в нём уже заменены на `***`.
+  - type: input
+    id: version
+    attributes:
+      label: Версия Hello!
+      description: Внизу бокового меню, например «0.1a-b2»
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: Что случилось
+      description: Что делали, что ожидали, что получилось
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Архив логов
+      description: Перетащите сюда Hello-logs-….zip
+  - type: dropdown
+    id: core
+    attributes:
+      label: Ядро
+      options: [sing-box, Xray, не знаю]
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Режим
+      options: [Только выбранные через VPN, Всё, кроме выбранных, не знаю]

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Hello!</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <span>Hello!</span>
+    </div>
+    <nav>
+      <button class="nav-item active" data-tab="home"><span class="ico">⏻</span>Главная</button>
+      <button class="nav-item" data-tab="servers"><span class="ico">☰</span>Серверы</button>
+      <button class="nav-item" data-tab="apps"><span class="ico">▣</span>Приложения</button>
+      <button class="nav-item" data-tab="settings"><span class="ico">⚙</span>Настройки</button>
+    </nav>
+    <div class="side-foot">
+      <div class="side-status" id="sideStatus"><span class="dot"></span><span class="txt">Отключено</span></div>
+      <div class="side-version" id="sideVersion"></div>
+    </div>
+  </aside>
+
+  <main>
+    <div id="banners"></div>
+
+    <!-- ГЛАВНАЯ -->
+    <section class="tab active" id="tab-home">
+      <div class="home">
+        <div class="home-top">
+          <button class="power" id="powerBtn" aria-label="Подключить">
+            <svg viewBox="0 0 24 24" width="50" height="50"><path d="M12 3v9" /><path d="M6.4 6.6a8 8 0 1 0 11.2 0" /></svg>
+          </button>
+          <div class="home-status" id="homeStatus">Отключено</div>
+          <div class="home-timer" id="homeTimer"></div>
+        </div>
+
+        <div class="home-cards">
+          <div class="card clickable" data-goto="servers">
+            <div class="card-label">Сервер <span class="badge" id="autoBadge" hidden>авто</span></div>
+            <div class="card-value" id="homeServer">не выбран</div>
+            <div class="card-sub" id="homeServerSub"></div>
+            <label class="card-switch" title="Переключаться на рабочий сервер подписки, если текущий перестал отвечать">
+              <span>Автопереключение</span>
+              <span class="switch"><input type="checkbox" id="autoSwitchToggle"><span></span></span>
+            </label>
+          </div>
+          <div class="card clickable" data-goto="apps">
+            <div class="card-label">Раздельное туннелирование</div>
+            <div class="card-value" id="homeMode"></div>
+            <div class="card-sub" id="homeApps"></div>
+          </div>
+          <div class="card clickable" data-goto="settings">
+            <div class="card-label">Ядро</div>
+            <div class="card-value" id="homeCore"></div>
+            <div class="card-sub" id="homeHealth">TUN через sing-box</div>
+          </div>
+        </div>
+
+        <!-- ЖУРНАЛ -->
+        <div class="logpanel" id="logPanel">
+          <div class="logpanel-head">
+            <div class="logpanel-title"><span class="log-dot" id="logDot"></span>Журнал</div>
+            <div class="chips" id="logChips">
+              <button class="chip on" data-filter="">Все</button>
+              <button class="chip" data-filter="singbox">sing-box</button>
+              <button class="chip" data-filter="xray">Xray</button>
+              <button class="chip" data-filter="launcher">Hello!</button>
+              <button class="chip" data-filter="errors">Ошибки</button>
+            </div>
+            <div class="logpanel-actions">
+              <button class="icon-btn" id="logCopy" title="Копировать видимое">⧉</button>
+              <button class="icon-btn" id="logClear" title="Очистить">⌫</button>
+              <button class="btn small" id="logCollect" title="Собрать архив с логами на рабочий стол">Собрать логи</button>
+              <button class="icon-btn" id="logExpand" title="Развернуть">⤢</button>
+            </div>
+          </div>
+          <div class="log-view" id="logView"></div>
+          <button class="log-jump" id="logJump" hidden>↓ новые строки</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- СЕРВЕРЫ -->
+    <section class="tab" id="tab-servers">
+      <header class="tab-head">
+        <h1>Серверы</h1>
+        <div class="actions">
+          <button class="btn" id="pingAll">Пинг всех</button>
+          <button class="btn" id="refreshSubs">Обновить подписки</button>
+        </div>
+      </header>
+      <div class="import">
+        <textarea id="importInput" rows="2" placeholder="Вставьте ссылку vless:// vmess:// trojan:// ss:// hysteria2:// или URL подписки"></textarea>
+        <button class="btn primary" id="importBtn">Добавить</button>
+      </div>
+      <p class="hint servers-hint">Метка <span class="chip mini on">авто</span> — сервер участвует в автопереключении. Нажмите на неё, чтобы исключить.</p>
+      <div id="serverGroups"></div>
+    </section>
+
+    <!-- ПРИЛОЖЕНИЯ -->
+    <section class="tab" id="tab-apps">
+      <header class="tab-head">
+        <h1>Приложения</h1>
+        <div class="actions">
+          <button class="btn" id="pickExe">Выбрать .exe</button>
+          <button class="btn primary" id="openProcPicker">Добавить из запущенных</button>
+        </div>
+      </header>
+
+      <div class="mode-switch">
+        <label class="mode-opt">
+          <input type="radio" name="mode" value="include">
+          <div>
+            <b>Только выбранные через VPN</b>
+            <span>Остальные программы работают напрямую</span>
+          </div>
+        </label>
+        <label class="mode-opt">
+          <input type="radio" name="mode" value="exclude">
+          <div>
+            <b>Всё через VPN, кроме выбранных</b>
+            <span>Выбранные программы идут в обход VPN</span>
+          </div>
+        </label>
+      </div>
+
+      <div id="appList" class="app-list"></div>
+    </section>
+
+    <!-- НАСТРОЙКИ -->
+    <section class="tab" id="tab-settings">
+      <header class="tab-head"><h1>Настройки</h1></header>
+      <div class="settings">
+        <div class="set-group">
+          <h2>Ядро</h2>
+          <div class="seg" id="coreSeg">
+            <button data-core="sing-box">sing-box</button>
+            <button data-core="xray">Xray</button>
+          </div>
+          <p class="hint" id="coreHint"></p>
+          <button class="btn small" id="openBin">Открыть папку ядер</button>
+        </div>
+
+        <div class="set-group">
+          <h2>Автопереключение</h2>
+          <label class="check"><input type="checkbox" data-setting="autoSwitch"> Переключаться на рабочий сервер подписки</label>
+          <label class="field"><span>Проверять соединение каждые, сек</span><input type="number" min="10" max="600" data-setting="checkInterval"></label>
+          <p class="hint">Проверка идёт через сам туннель. После двух неудачных проверок подряд выбирается сервер с наименьшей задержкой; если и он не отвечает — следующий. Работает с ядром sing-box.</p>
+        </div>
+
+        <div class="set-group">
+          <h2>DNS</h2>
+          <label class="field"><span>DNS через VPN (DoH)</span><input data-setting="dnsRemote" placeholder="1.1.1.1"></label>
+          <label class="field"><span>Прямой DNS</span><input data-setting="dnsDirect" placeholder="local или IP"></label>
+          <label class="check"><input type="checkbox" data-setting="dnsOthersViaVpn"> DNS остальных программ тоже через VPN (режим «только выбранные»)</label>
+        </div>
+
+        <div class="set-group">
+          <h2>TUN</h2>
+          <label class="field"><span>Стек</span>
+            <select data-setting="tunStack">
+              <option value="mixed">mixed</option>
+              <option value="system">system</option>
+              <option value="gvisor">gvisor</option>
+            </select>
+          </label>
+          <label class="check"><input type="checkbox" data-setting="strictRoute"> Strict route (защита от утечек)</label>
+          <label class="check"><input type="checkbox" data-setting="ipv6"> IPv6</label>
+        </div>
+
+        <div class="set-group">
+          <h2>Прочее</h2>
+          <label class="field"><span>Порт SOCKS для Xray</span><input type="number" data-setting="socksPort"></label>
+          <label class="field"><span>User-Agent подписок</span><input data-setting="subUserAgent"></label>
+          <label class="field"><span>Уровень логов</span>
+            <select data-setting="logLevel">
+              <option value="warn">warn</option>
+              <option value="info">info</option>
+              <option value="debug">debug</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="set-group">
+          <h2>Диагностика</h2>
+          <p class="hint">Соберёт архив с журналом, конфигами и сведениями о системе на рабочий стол. UUID, пароли, ключи, адреса серверов и ссылки подписок вырезаются — архив можно спокойно отправить.</p>
+          <button class="btn primary small" id="collectLogs2">Собрать логи</button>
+        </div>
+      </div>
+    </section>
+
+    <svg class="waves" viewBox="0 0 1200 140" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 70 C 200 30 400 110 600 70 S 1000 30 1200 70 V140 H0Z" fill="#7d8cff" opacity=".10"/>
+      <path d="M0 95 C 220 60 420 130 640 95 S 1020 60 1200 95 V140 H0Z" fill="#6fe3cf" opacity=".08"/>
+      <path d="M0 115 C 250 90 450 140 700 115 S 1050 90 1200 115 V140 H0Z" fill="#f0b6d3" opacity=".06"/>
+    </svg>
+  </main>
+
+  <!-- Модальное окно выбора процессов -->
+  <div class="modal" id="procModal" hidden>
+    <div class="modal-box">
+      <header>
+        <h2>Запущенные программы</h2>
+        <button class="icon-btn" id="procClose" aria-label="Закрыть">✕</button>
+      </header>
+      <div class="modal-tools">
+        <input id="procSearch" placeholder="Поиск по имени, заголовку или пути">
+        <button class="btn" id="procRefresh">Обновить</button>
+      </div>
+      <div id="procList" class="proc-list"></div>
+      <footer>
+        <span id="procCount" class="hint"></span>
+        <button class="btn primary" id="procAdd">Добавить выбранные</button>
+      </footer>
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+  <script src="app.js"></script>
+</body>
+</html>

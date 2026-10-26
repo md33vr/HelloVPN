@@ -1,0 +1,97 @@
+{
+  "name": "hello-vpn",
+  "productName": "Hello",
+  "displayName": "Hello!",
+  "version": "0.1.0-alpha.2",
+  "displayVersion": "0.1a",
+  "description": "Hello! — VPN-клиент для Windows (sing-box / Xray)",
+  "author": "Hello! friends",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "postinstall": "node node_modules/electron/install.js",
+    "start": "electron .",
+    "fetch-cores": "node scripts/fetch-cores.js",
+    "test": "node scripts/selftest.js",
+    "dist": "electron-builder --win --x64",
+    "set-build": "node scripts/set-build.js"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "friends.hello.vpn",
+    "productName": "Hello",
+    "copyright": "Hello! 0.1a — между друзьями",
+    "directories": {
+      "output": "release/0.1a-b2",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "src/**",
+      "renderer/**"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin",
+        "filter": [
+          "*.exe",
+          "*.dll"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "executableName": "Hello",
+      "requestedExecutionLevel": "requireAdministrator",
+      "signAndEditExecutable": true,
+      "artifactName": "Hello-0.1a-b2-win-x64-portable.${ext}"
+    },
+    "nsis": {
+      "artifactName": "Hello-Setup-0.1a-b2-win-x64.exe",
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Hello!",
+      "uninstallDisplayName": "Hello! 0.1a-b2",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "language": "1049",
+      "installerLanguages": [
+        "ru_RU"
+      ]
+    },
+    "electronLanguages": [
+      "ru",
+      "en-US"
+    ],
+    "compression": "maximum",
+    "buildVersion": "0.1.0.2"
+  },
+  "buildNumber": 2
+}

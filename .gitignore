@@ -1,0 +1,7 @@
+node_modules/
+dist/
+release/
+bin/*.exe
+bin/*.dll
+bin/*.dat
+*.log

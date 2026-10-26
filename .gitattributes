@@ -1,0 +1,9 @@
+# Нормализуем переводы строк, но .bat/.cmd на Windows обязаны быть CRLF —
+# с LF cmd.exe неправильно разбирает метки и скобки.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.png binary
+*.ico binary
+*.exe binary
+*.dll binary
